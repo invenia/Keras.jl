@@ -12,7 +12,23 @@ Keras.jl is not a registered package yet so you should install it via:
 julia> Pkg.clone("https://github.com/invenia/Keras.jl")
 ```
 
-Keras.jl will handle installing [tensorflow](https://www.tensorflow.org/) (v0.9.0) and [keras](https://keras.io/) (v1.0.7) using [Conda.jl](https://github.com/JuliaPy/Conda.jl) and the [conda-forge](https://www.continuum.io/blog/developer-blog/community-conda-forge) channel.
+Keras.jl can handle installing [tensorflow](https://www.tensorflow.org/) (v0.9.0) and [keras](https://keras.io/) (v1.0.7) using [Conda.jl](https://github.com/JuliaPy/Conda.jl) and the [conda-forge](https://www.continuum.io/blog/developer-blog/community-conda-forge) channel.
+
+Start by setting `PYTHON` environment variable so that PyCall.jl uses the default python and package for Conda.jl.
+```julia
+julia> ENV["PYTHON"] = ""
+```
+
+Now rebuild PyCall.jl and Keras.jl
+```julia
+julia> Pkg.build("PyCall")
+...
+
+julia> Pkg.build("Keras")
+...
+```
+
+When building Keras.jl a default keras.json config will be written to `~/.keras/keras.json` for you.
 
 
 ## Getting Started
