@@ -74,6 +74,7 @@ function __init__()
 end
 
 include("tensors.jl")
+include("utils.jl")
 include("optimizers.jl")
 include("regularizers.jl")
 include("layers.jl")
