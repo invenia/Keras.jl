@@ -50,8 +50,8 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
 
         @test haskey(h[:history], "acc")
         @test haskey(h[:history], "loss")
-        @test haskey(h[:history], "mae")
-        @test haskey(h[:history], "rmse")
+        @test haskey(h[:history], "Keras.mae")
+        @test haskey(h[:history], "Keras.rmse")
 
         evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
         predict(model, rand(10, 30); batch_size=5, verbose=0)

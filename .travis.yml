@@ -13,7 +13,9 @@ notifications:
 # uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  - julia -e 'ENV["PYTHON"] = ""; Pkg.clone(pwd()); Pkg.build("Keras"); Pkg.build("PyCall"); Pkg.test("Keras"; coverage=true)'
+  # Try using the master version of PyCall
+  - julia -e 'ENV["PYTHON"] = ""; Pkg.clone("https://github.com/JuliaPy/PyCall.jl"); Pkg.build("PyCall")'
+  - julia -e 'Pkg.clone(pwd()); Pkg.build("Keras"); Pkg.test("Keras"; coverage=true)'
 after_success:
   # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("Keras")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
