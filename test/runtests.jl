@@ -5,15 +5,17 @@ using Base.Test
 
 import Keras.Layers: Dense, Activation
 
-myobjective(actual, pred) = mean(square(actual .- pred))
+mse(actual, pred) = mean(square(actual - pred))
+mae(actual, pred) = mean(abs(actual - pred))
+rmse(actual, pred) = sqrt(mse(actual, pred))
 
 @testset "Keras" begin
     @testset "Basic Usage" begin
         model = Sequential()
-        add!(model, Keras.Layers.Dense(80, input_dim=735))
-        add!(model, Keras.Layers.Activation(:relu))
-        add!(model, Keras.Layers.Dense(10))
-        add!(model, Keras.Layers.Activation(:softmax))
+        add!(model, Dense(80, input_dim=30))
+        add!(model, Activation(:relu))
+        add!(model, Dense(10))
+        add!(model, Activation(:softmax))
         compile!(
             model;
             loss=:categorical_crossentropy,
@@ -21,29 +23,41 @@ myobjective(actual, pred) = mean(square(actual .- pred))
             metrics=[:accuracy]
         )
 
-        h = fit!(model, rand(1000, 735), rand(1000, 10); nb_epoch=100, batch_size=32, verbose=0)
-        evaluate(model, rand(10, 735), rand(10, 10); batch_size=5, verbose=0)
-        predict(model, rand(10, 735); batch_size=5, verbose=0)
+        h = fit!(model, rand(100, 30), rand(100, 10); nb_epoch=20, batch_size=10, verbose=0)
+
+        @test haskey(h[:history], "acc")
+        @test haskey(h[:history], "loss")
+
+        evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
+        predict(model, rand(10, 30); batch_size=5, verbose=0)
     end
 
-    # @testset "Custom Objective" begin
-    #     model = Sequential()
-    #     add!(model, Keras.Layers.Dense(20, input_dim=30))
-    #     add!(model, Keras.Layers.Activation(:relu))
-    #     add!(model, Keras.Layers.Dense(10))
-    #     add!(model, Keras.Layers.Activation(:softmax))
-    #
-    #     compile!(
-    #         model;
-    #         loss=metric(myobjective),
-    #         optimizer=:sgd,
-    #         metrics=[:accuracy]
-    #     )
-    #
-    #     h = fit!(model, rand(100, 30), rand(100, 10); nb_epoch=10, batch_size=10, verbose=0)
-    #     evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
-    #     predict(model, rand(10, 30); batch_size=5, verbose=0)
-    # end
+    @testset "Custom Objectives & Metrics" begin
+        model = Sequential()
+        add!(model, Dense(20, input_dim=30))
+        add!(model, Activation(:relu))
+        add!(model, Dense(10))
+        add!(model, Activation(:softmax))
+
+        compile!(
+            model;
+            loss=Metric(mse),
+            optimizer=:sgd,
+            metrics=[:accuracy, Metric(mae), Metric(rmse)]
+        )
+
+        h = fit!(model, rand(100, 30), rand(100, 10); nb_epoch=10, batch_size=10, verbose=0)
+
+        @test haskey(h[:history], "acc")
+        @test haskey(h[:history], "loss")
+        @test haskey(h[:history], "mae")
+        @test haskey(h[:history], "rmse")
+
+        evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
+        predict(model, rand(10, 30); batch_size=5, verbose=0)
+
+
+    end
 
     @testset "Tensor Operations" begin
         @testset "Single Tensor Operations" begin
@@ -117,4 +131,19 @@ myobjective(actual, pred) = mean(square(actual .- pred))
             Keras.cast(x_t, :float64)
         end
     end
+
+    # @testset "Layers" begin
+    #     @testset "Basic Usage" begin
+    #         layer = Dense(20, input_dim=30)
+    #         W = weights(layer)
+    #         println(W)
+    #
+    #         weights!(layer, W)
+    #         config(layer)
+    #         input(layer)
+    #         output(layer)
+    #         input_shape(layer)
+    #         output_shape(layer)
+    #     end
+    # end
 end

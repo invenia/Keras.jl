@@ -1,11 +1,9 @@
-function metric(f::Function)
-    function inner(actual::PyObject, pred::PyObject)
-        return f(Tensor(actual), Tensor(pred)).o
-    end
-
-    py_func = PyObject(inner)
-    py_func[:__name__] = typeof(f).name.mt.name
-    return py_func
+@pydef type Metric
+    __init__(self, f::Function, name=nothing) = (
+        self[:f] = f;
+        self[:__name__] = name == nothing ? typeof(f).name.mt.name : name
+    )
+   __call__(self, x::PyObject, y::PyObject) = self[:f](Tensor(x), Tensor(y)).o
 end
 
-export metric
+export Metric

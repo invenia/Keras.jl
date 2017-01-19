@@ -17,7 +17,7 @@ end
 # Base.convert(::Type{Tensor}, obj::PyObject) = Tensor(obj)
 
 
-Base.abs(x::Tensor) = Tensor(x.o[:abs]())
+Base.abs(x::Tensor) = Tensor(Keras._backend[:abs](x.o))
 
 Base.:-(x::Tensor) = Tensor(x.o[:__neg__]())
 Base.:~(x::Tensor) = Tensor(x.o[:__invert__]())

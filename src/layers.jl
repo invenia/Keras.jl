@@ -25,7 +25,7 @@ end
 
 function input{T<:Layer}(l::T)
     obj = PyObject(l)
-    return Tensor(obj[:get_input]())
+    return Tensor(obj[:input]())
 end
 
 function input{T<:Layer}(l::T, i::Int)
@@ -35,7 +35,7 @@ end
 
 function output{T<:Layer}(l::T)
     obj = PyObject(l)
-    return Tensor(obj[:get_output]())
+    return Tensor(obj[:output]())
 end
 
 function output{T<:Layer}(l::T, i::Int)
