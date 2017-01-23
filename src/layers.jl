@@ -25,7 +25,7 @@ end
 
 function input{T<:Layer}(l::T)
     obj = PyObject(l)
-    return Tensor(obj[:input]())
+    return Tensor(obj[:input])
 end
 
 function input{T<:Layer}(l::T, i::Int)
@@ -35,7 +35,7 @@ end
 
 function output{T<:Layer}(l::T)
     obj = PyObject(l)
-    return Tensor(obj[:output]())
+    return Tensor(obj[:output])
 end
 
 function output{T<:Layer}(l::T, i::Int)
@@ -45,7 +45,7 @@ end
 
 function input_shape{T<:Layer}(l::T)
     obj = PyObject(l)
-    return obj[:get_input_shape]()
+    return obj[:input_shape]
 end
 
 function input_shape{T<:Layer}(l::T, i::Int)
@@ -55,7 +55,7 @@ end
 
 function output_shape{T<:Layer}(l::T)
     obj = PyObject(l)
-    return obj[:get_output_shape]()
+    return obj[:output_shape]
 end
 
 function output_shape{T<:Layer}(l::T, i::Int)
@@ -175,6 +175,10 @@ for l in keras_all_layers
         #convert(::Type{$(layer_name)}, obj::PyObject) = $layer_name(obj)
         PyObject(layer::$(layer_name)) = layer.obj
         # Base.Docs.doc(layer::$(layer_name)) = Base.Docs.doc(layer.obj)
+        function (_::$(layer_name))(args...; kwargs...)
+            obj = PyObject(_)
+            return obj[:__call__](args...; kwargs...)
+        end
     end
 end
 

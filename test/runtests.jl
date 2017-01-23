@@ -3,7 +3,7 @@ using StatsBase
 
 using Base.Test
 
-import Keras.Layers: Dense, Activation
+import Keras.Layers: Dense, Activation, LSTM
 
 mse(actual, pred) = mean(square(actual - pred))
 mae(actual, pred) = mean(abs(actual - pred))
@@ -41,9 +41,9 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
 
         compile!(
             model;
-            loss=Metric(mse),
+            loss=metric(mse),
             optimizer=:sgd,
-            metrics=[:accuracy, Metric(mae), Metric(rmse)]
+            metrics=[:accuracy, metric(mae), metric(rmse)]
         )
 
         h = fit!(model, rand(100, 30), rand(100, 10); nb_epoch=10, batch_size=10, verbose=0)
@@ -132,18 +132,20 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
         end
     end
 
-    # @testset "Layers" begin
-    #     @testset "Basic Usage" begin
-    #         layer = Dense(20, input_dim=30)
-    #         W = weights(layer)
-    #         println(W)
-    #
-    #         weights!(layer, W)
-    #         config(layer)
-    #         input(layer)
-    #         output(layer)
-    #         input_shape(layer)
-    #         output_shape(layer)
-    #     end
-    # end
+    @testset "Layers" begin
+        @testset "Basic Usage" begin
+            a = Keras._layers[:Input](shape=(140, 256))
+
+            lstm = LSTM(32)
+            encoded_a = lstm(a)
+
+            W = weights(lstm)
+            weights!(lstm, W)
+            config(lstm)
+            input(lstm)
+            output(lstm)
+            input_shape(lstm)
+            output_shape(lstm)
+        end
+    end
 end
