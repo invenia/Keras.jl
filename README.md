@@ -227,8 +227,7 @@ Notes:
 
 ## TODO
 
-1. Wrap keras.callbacks
-1. Wrap keras.initializations
-1. Wrap keras.constraints
 1. Wrap saving and loading model state.
-1. Properly convert python docstrings to julia
+1. Migrate to Keras 2.0
+1. 100% Test coverage
+1. Properly convert python docstrings to julia (low priority)
