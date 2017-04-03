@@ -2,7 +2,7 @@ using Conda
 
 Conda.add_channel("conda-forge")
 Conda.add("tensorflow=0.9.0")
-Conda.add("keras")
+Conda.add("keras==1.0.7")
 
 keras_path = joinpath(homedir(), ".keras")
 config_path = joinpath(keras_path, "keras.json")
