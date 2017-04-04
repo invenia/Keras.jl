@@ -29,9 +29,9 @@ Base.:.^(a::Tensor, b::Tensor) = Tensor(a.o[:__pow__](b.o))
 Base.:.==(a::Tensor, b::Tensor) = Tensor(Keras._backend[:equal](a.o, b.o))
 Base.:.!=(a::Tensor, b::Tensor) = Tensor(Keras._backend[:not_equal](a.o, b.o))
 Base.:.>(a::Tensor, b::Tensor) = Tensor(Keras._backend[:greater](a.o, b.o))
-Base.:.<(a::Tensor, b::Tensor) = Tensor(Keras._backend[:lesser](a.o, b.o))
+Base.:.<(a::Tensor, b::Tensor) = Tensor(Keras._backend[:less](a.o, b.o))
 Base.:.>=(a::Tensor, b::Tensor) = Tensor(Keras._backend[:greater_equal](a.o, b.o))
-Base.:.<=(a::Tensor, b::Tensor) = Tensor(Keras._backend[:lesser_equal](a.o, b.o))
+Base.:.<=(a::Tensor, b::Tensor) = Tensor(Keras._backend[:less_equal](a.o, b.o))
 
 Base.:+(a::Tensor, b::Tensor) = Tensor(a.o[:__add__](b.o))
 Base.:.+(a::Tensor, b::Tensor) = a + b

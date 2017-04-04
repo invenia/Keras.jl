@@ -23,7 +23,7 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             metrics=[:accuracy]
         )
 
-        h = fit!(model, rand(100, 30), rand(100, 10); nb_epoch=20, batch_size=10, verbose=0)
+        h = fit!(model, rand(100, 30), rand(100, 10); epochs=20, batch_size=10, verbose=0)
 
         @test haskey(h[:history], "acc")
         @test haskey(h[:history], "loss")
@@ -46,7 +46,7 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             metrics=[:accuracy, metric(mae), metric(rmse)]
         )
 
-        h = fit!(model, rand(100, 30), rand(100, 10); nb_epoch=10, batch_size=10, verbose=0)
+        h = fit!(model, rand(100, 30), rand(100, 10); epochs=10, batch_size=10, verbose=0)
 
         @test haskey(h[:history], "acc")
         @test haskey(h[:history], "loss")

@@ -6,7 +6,13 @@ import ..Keras
 import ..Keras: PyDoc
 
 const keras_optimizers = [
-    "SGD", "RMSprop", "Adagrad", "Adadelta", "Adam", "Adamax", "Nadam"
+    "SGD",
+    "RMSprop",
+    "Adagrad",
+    "Adadelta",
+    "Adam",
+    "Adamax",
+    "Nadam",
 ]
 
 for o in keras_optimizers
