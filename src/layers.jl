@@ -3,7 +3,7 @@ using StatsBase
 
 import Base: convert, show
 
-abstract Layer
+@compat abstract type Layer end
 
 convert{T<:Layer}(t::Type{T}, x::PyObject) = error("convert(::Type{$T}, ::PyObject) not implemented.")
 PyObject{T<:Layer}(l::T) = error("PyObject(::$T) not implemented.")
@@ -172,8 +172,8 @@ for (submod, layers) in keras_layers
             #convert(::Type{$(layer_name)}, obj::PyObject) = $layer_name(obj)
             PyObject(layer::$(layer_name)) = layer.obj
             # Base.Docs.doc(layer::$(layer_name)) = Base.Docs.doc(layer.obj)
-            function (_::$(layer_name))(args...; kwargs...)
-                obj = PyObject(_)
+            function (layer::$(layer_name))(args...; kwargs...)
+                obj = PyObject(layer)
                 return obj[:__call__](args...; kwargs...)
             end
         end
