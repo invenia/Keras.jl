@@ -93,6 +93,10 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
                 result = Bool(Keras.eval(op(x)))
                 @test expected == result
             end
+
+            expected = broadcast(~, x)
+            result = map(i -> i[1], (~Tensor(x)).o)
+            @test expected == result
         end
 
         @testset "Two Tensor Operations" begin
@@ -127,6 +131,16 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
                 @test typeof(expected) == typeof(result)
                 @test all(map(isapprox, expected, result))
             end
+
+            a = bitrand(4)
+            b = bitrand(4)
+            expected = broadcast(&, a, b)
+            result = map(i -> i[1], (Tensor(a) & Tensor(b)).o)
+            @test expected == result
+
+            expected = broadcast(|, a, b)
+            result = map(i -> i[1], (Tensor(a) | Tensor(b)).o)
+            @test expected == result
         end
 
         @testset "Custom Tensor Operations" begin
@@ -154,5 +168,14 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             input_shape(lstm)
             output_shape(lstm)
         end
+    end
+
+    @testset "PyDoc" begin
+        output = sprint(show, Keras.PyDoc(Keras._models, :Sequential))
+        @test startswith(output, "Linear stack of layers.")
+        text = Base.Docs.catdoc(Keras.PyDoc(Keras._models, :Sequential), Keras.PyDoc(Keras._layers, :Dense))
+        output = string(text)
+        @test startswith(output, "Linear stack of layers.")
+        @test endswith(strip(output), "the output would have shape `(batch_size, units)`.")
     end
 end
