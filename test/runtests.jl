@@ -63,18 +63,27 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             x_t = variable(x)
 
             @testset "Testing $op" for op in [-, transpose, sqrt, exp, log, round, sin, cos]
-                expected = op(x)
-                result = Keras.eval(op(x_t))
+                expected, result = if op in [sqrt, exp, log, round, sin, cos]
+                    broadcast(op, x), Keras.eval(broadcast(op, x_t))
+                else
+                    op(x), Keras.eval(op(x_t))
+                end
 
                 @test size(expected) == size(result)
                 @test typeof(expected) == typeof(result)
-                @test all(map(isapprox, expected, result))
+                match = all(map(isapprox, expected, result))
+                if !match
+                    println(expected)
+                    println(result)
+                end
+                @test match
             end
 
             @testset "Testing $op" for op in [maximum, minimum, sum, prod, var, std, mean]
                 expected = Float32(op(x))
                 result = Float32(Keras.eval(op(x_t))[1])
-                @test_approx_eq_eps expected result 0.1
+
+                @test isapprox(expected, result; atol=0.1)
             end
 
             x = rand(Bool, 4)
@@ -93,15 +102,15 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             b = rand(Float32, 4, 3)
             b_t = variable(b)
 
-            @testset "$op" for op in [.==, .!=, .>, .<, .>=, .<=]
-                expected = op(a, b)
-                result = BitArray(Keras.eval(op(a_t, b_t)))
+            @testset "$op" for op in [==, !=, >, <, >=, <=]
+                expected = broadcast(op, a, b)
+                result = BitArray(Keras.eval(broadcast(op, a_t, b_t)))
                 @test expected == result
             end
 
-            @testset "Testing $op" for op in [mod, .^, .-, .+, .*, ./]
-                expected = op(a, b)
-                result = Keras.eval(op(a_t, b_t))
+            @testset "Testing $op" for op in [mod, ^, -, +, *, /]
+                expected = broadcast(op, a, b)
+                result = Keras.eval(broadcast(op, a_t, b_t))
                 @test size(expected) == size(result)
                 @test typeof(expected) == typeof(result)
                 @test all(map(isapprox, expected, result))

@@ -1,6 +1,7 @@
 module Keras
 
 using PyCall
+using Compat
 
 import PyCall: PyObject
 

@@ -1,6 +1,6 @@
 using StatsBase
 
-abstract Model
+abstract type Model end
 
 layers{T<:Model}(m::T) = error("layers(::$T) not implemented.")
 
