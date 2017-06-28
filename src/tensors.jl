@@ -66,14 +66,14 @@ cast(x::Tensor, dtype) =  Keras._backend[:cast](x.o, dtype)
 
 # Utility methods for pairwise operations to support backwards compatibility
 Base.mod(a::Tensor, b::Tensor) = mod.(a, b)
-Base.:+(a::Tensor, b::Tensor) = a .+ b
-Base.:-(a::Tensor, b::Tensor) = a .- b
-Base.exp(x::Tensor) = exp.(x)
-Base.sqrt(x::Tensor) = sqrt.(x)
-Base.log(x::Tensor) = log.(x)
-Base.round(x::Tensor) = round.(x)
-Base.sin(x::Tensor) = sin.(x)
-Base.cos(x::Tensor) = cos.(x)
+Base.:+(a::Tensor, b::Tensor) = broadcast(+, a, b)
+Base.:-(a::Tensor, b::Tensor) = broadcast(-, a, b)
+Base.exp(x::Tensor) = broadcast(exp, x)
+Base.sqrt(x::Tensor) = broadcast(sqrt, x)
+Base.log(x::Tensor) = broadcast(log, x)
+Base.round(x::Tensor) = broadcast(round, x)
+Base.sin(x::Tensor) = broadcast(sin, x)
+Base.cos(x::Tensor) = broadcast(cos, x)
 
 
 # This is not a complete wrapping of the keras backend.

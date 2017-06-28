@@ -3,7 +3,7 @@ using StatsBase
 
 import Base: convert, show
 
-abstract type Layer end
+@compat abstract type Layer end
 
 convert{T<:Layer}(t::Type{T}, x::PyObject) = error("convert(::Type{$T}, ::PyObject) not implemented.")
 PyObject{T<:Layer}(l::T) = error("PyObject(::$T) not implemented.")
