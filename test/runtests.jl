@@ -50,13 +50,11 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
 
         @test haskey(h[:history], "acc")
         @test haskey(h[:history], "loss")
-        @test haskey(h[:history], "Keras.mae")
-        @test haskey(h[:history], "Keras.rmse")
+        @test haskey(h[:history], "mae")
+        @test haskey(h[:history], "rmse")
 
         evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
         predict(model, rand(10, 30); batch_size=5, verbose=0)
-
-
     end
 
     @testset "Tensor Operations" begin
@@ -75,7 +73,7 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
 
             @testset "Testing $op" for op in [maximum, minimum, sum, prod, var, std, mean]
                 expected = Float32(op(x))
-                result = Float32(Keras.eval(op(x_t)))
+                result = Float32(Keras.eval(op(x_t))[1])
                 @test_approx_eq_eps expected result 0.1
             end
 

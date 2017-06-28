@@ -1,4 +1,4 @@
 julia 0.5
 Conda
-PyCall
+PyCall 1.9.0
 StatsBase
