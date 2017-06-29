@@ -64,7 +64,11 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
 
             @testset "Testing $op" for op in [-, transpose, sqrt, exp, log, round, sin, cos]
                 expected, result = if op in [sqrt, exp, log, round, sin, cos]
-                    broadcast(op, x), Keras.eval(broadcast(op, x_t))
+                    op_result = Keras.eval(op(x_t))
+                    bc_result = Keras.eval(broadcast(op, x_t))
+                    @test op_result == bc_result
+
+                    broadcast(op, x), bc_result
                 else
                     op(x), Keras.eval(op(x_t))
                 end
