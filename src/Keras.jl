@@ -24,13 +24,9 @@ immutable PyDoc
     obj::PyObject
     names::Tuple{Vararg{Symbol}}
 
-    PyDoc(obj::PyObject) = new(o, ())
     PyDoc(obj::PyObject, name::Symbol) = new(obj, (name,))
-    PyDoc(obj::PyObject, name1::Symbol, name2::Symbol) = new(obj, (name1, name2))
-    PyDoc(obj::PyObject, names::Tuple{Vararg{Symbol}}) = new(o, names)
 end
 
-# TODO: Fix this and I WAS HERE!
 function Base.show(io::IO, ::MIME"text/plain", doc::PyDoc)
     obj = doc.obj
 
@@ -39,8 +35,6 @@ function Base.show(io::IO, ::MIME"text/plain", doc::PyDoc)
     end
 
     if haskey(obj, "__doc__")
-        # Pass the doc string through several simple regex parsers to help convert
-        # examples to julia.
         print(io, convert(AbstractString, obj[:__doc__]))
     else
         print(io, "no Python docstring found for PyDoc($(doc.obj), $(doc.names))")

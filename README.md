@@ -1,7 +1,11 @@
 # Keras.jl
 
 [![Build Status](https://travis-ci.org/invenia/Keras.jl.svg?branch=master)](https://travis-ci.org/invenia/Keras.jl)
-[![codecov.io](http://codecov.io/github/invenia/Keras.jl/coverage.svg?branch=master)](http://codecov.io/github/invenia/Keras.jl?branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/2s8yo4bkojubnb85/branch/master?svg=true)](https://ci.appveyor.com/project/rofinn/keras-jl/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/invenia/Keras.jl/badge.svg?branch=master)](https://coveralls.io/github/invenia/Keras.jl?branch=master)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Project Status: WIP – Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
+
 
 Keras.jl uses [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) to build a julia wrapper around the python neural network library [keras](https://keras.io/).
 

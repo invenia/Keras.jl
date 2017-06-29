@@ -64,7 +64,11 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
 
             @testset "Testing $op" for op in [-, transpose, sqrt, exp, log, round, sin, cos]
                 expected, result = if op in [sqrt, exp, log, round, sin, cos]
-                    broadcast(op, x), Keras.eval(broadcast(op, x_t))
+                    op_result = Keras.eval(op(x_t))
+                    bc_result = Keras.eval(broadcast(op, x_t))
+                    @test op_result == bc_result
+
+                    broadcast(op, x), bc_result
                 else
                     op(x), Keras.eval(op(x_t))
                 end
@@ -90,9 +94,13 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             x_t = variable(x)
             @testset "Testing $op" for op in [all, any]
                 expected = op(x)
-                result = Bool(Keras.eval(op(x)))
+                result = Bool(Keras.eval(op(x_t)))
                 @test expected == result
             end
+
+            expected = broadcast(~, x)
+            result = map(i -> i[1], (~Tensor(x)).o)
+            @test expected == result
         end
 
         @testset "Two Tensor Operations" begin
@@ -127,6 +135,16 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
                 @test typeof(expected) == typeof(result)
                 @test all(map(isapprox, expected, result))
             end
+
+            a = bitrand(4)
+            b = bitrand(4)
+            expected = broadcast(&, a, b)
+            result = map(i -> i[1], (Tensor(a) & Tensor(b)).o)
+            @test expected == result
+
+            expected = broadcast(|, a, b)
+            result = map(i -> i[1], (Tensor(a) | Tensor(b)).o)
+            @test expected == result
         end
 
         @testset "Custom Tensor Operations" begin
@@ -154,5 +172,14 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             input_shape(lstm)
             output_shape(lstm)
         end
+    end
+
+    @testset "PyDoc" begin
+        output = sprint(show, Keras.PyDoc(Keras._models, :Sequential))
+        @test startswith(output, "Linear stack of layers.")
+        text = Base.Docs.catdoc(Keras.PyDoc(Keras._models, :Sequential), Keras.PyDoc(Keras._layers, :Dense))
+        output = string(text)
+        @test startswith(output, "Linear stack of layers.")
+        @test endswith(strip(output), "the output would have shape `(batch_size, units)`.")
     end
 end
