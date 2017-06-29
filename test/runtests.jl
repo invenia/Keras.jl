@@ -94,7 +94,7 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
             x_t = variable(x)
             @testset "Testing $op" for op in [all, any]
                 expected = op(x)
-                result = Bool(Keras.eval(op(x_t)))
+                result = Bool(Keras.eval(op(x_t))[1])
                 @test expected == result
             end
 
