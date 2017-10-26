@@ -1,21 +1,18 @@
 module Regularizers
 
-import PyCall: PyObject, pycall
+import PyCall: PyObject, pycall, PyAny
 
 import ..Keras
 import ..Keras: PyDoc
 
-const keras_regularizers = [ "WeightRegularizer", "ActivityRegularizer" ]
-const keras_regularizer_shortcuts = [
+const keras_regularizer_classes = [ "Regularizer", "L1L2"]
+const keras_regularizer_aliases = [
     "l1",
     "l2",
-    "l1l2",
-    "activity_l1",
-    "activity_l2",
-    "activity_l1l2",
+    "l1_l2",
 ]
 
-for r in keras_regularizers
+for r in keras_regularizer_classes
     reg_name = Symbol(r)
 
     @eval begin
@@ -33,7 +30,7 @@ for r in keras_regularizers
     end
 end
 
-for r in keras_regularizer_shortcuts
+for r in keras_regularizer_aliases
     rf = Symbol(r)
 
     @eval begin

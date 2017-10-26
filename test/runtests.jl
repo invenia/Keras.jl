@@ -174,6 +174,18 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
         end
     end
 
+    @testset "Regularizers" begin
+        @testset "Regularizer classes: $rc" for rc in Keras.Regularizers.keras_regularizer_classes
+            q = getfield(Keras.Regularizers, Symbol(rc))()
+            @test isa(q.obj, PyCall.PyObject)
+        end
+
+        @testset "Creating $reg regularizer" for reg in Keras.Regularizers.keras_regularizer_aliases
+            q = getfield(Keras.Regularizers, Symbol(reg))()
+            @test isa(q, PyCall.PyObject)
+        end
+    end
+
     @testset "PyDoc" begin
         output = sprint(show, Keras.PyDoc(Keras._models, :Sequential))
         @test startswith(output, "Linear stack of layers.")
