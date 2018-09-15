@@ -1,9 +1,10 @@
 module Keras
 
-using PyCall
 using Compat
+using PyCall
 
-import PyCall: PyObject
+using Compat: @__MODULE__
+import PyCall: PyObject, @pydef
 
 # We store our renamed aliases to aid with
 # automatic docstring updating.
@@ -20,7 +21,7 @@ help from a PyObject via zero or more keys.
 This saves us time when loading Keras, since we don't have
 to load up all of the documentation strings right away.
 """
-immutable PyDoc
+struct PyDoc
     obj::PyObject
     names::Tuple{Vararg{Symbol}}
 
@@ -72,10 +73,11 @@ function __init__()
     copy!(_callbacks, pyimport("keras.callbacks"))
     copy!(_constraints, pyimport("keras.constraints"))
     copy!(_initializers, pyimport("keras.initializers"))
+
+    include(joinpath(@__DIR__, "utils.jl"))
 end
 
 include("tensors.jl")
-include("utils.jl")
 include("callbacks.jl")
 include("constraints.jl")
 include("initializers.jl")

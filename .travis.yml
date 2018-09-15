@@ -1,13 +1,11 @@
-# Documentation: http://docs.travis-ci.com/user/languages/julia/
-dist: trusty
-sudo: false
 language: julia
 os:
   - linux
   - osx
 julia:
-  - 0.5
   - 0.6
+  - 0.7
+  - 1.0
   - nightly
 matrix:
   fast_finish: true
@@ -15,12 +13,24 @@ matrix:
     - julia: nightly
 notifications:
   email: false
-# uncomment the following lines to override the default test script
 script:
   - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-  # Try using the master version of PyCall
-  - julia -e 'ENV["PYTHON"] = ""; Pkg.clone("https://github.com/JuliaPy/PyCall.jl"); Pkg.build("PyCall")'
-  - julia -e 'Pkg.clone(pwd()); Pkg.build("Keras"); Pkg.test("Keras"; coverage=true)'
+  - |
+    julia --depwarn=error -e '
+      VERSION >= v"0.7.0-DEV.3656" && using Pkg
+      ENV["PYTHON"] = ""
+      # Because we seem to be installing 3.6 deps for 3.7,
+      # so I guess we can stick with 2 for now :/?
+      ENV["CONDA_JL_VERSION"] = "2"
+      if VERSION >= v"0.7.0-DEV.5183" && (isfile("Project.toml") || isfile("JuliaProject.toml"))
+          Pkg.build(); Pkg.build("PyCall"); Pkg.test(coverage=true)
+      else
+          Pkg.clone(pwd()); Pkg.build("PyCall"); Pkg.build("Keras"); Pkg.test("Keras"; coverage=true)
+      end'
 after_success:
-  # push coverage results to Codecov
-  - julia -e 'cd(Pkg.dir("Keras")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder()); Coveralls.submit(process_folder())'
+  - |
+    julia -e '
+      VERSION >= v"0.7.0-DEV.3656" && using Pkg
+      VERSION >= v"0.7.0-DEV.5183" || cd(Pkg.dir("Keras"))
+      Pkg.add("Coverage"); using Coverage
+      Codecov.submit(process_folder())'

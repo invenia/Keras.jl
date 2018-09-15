@@ -16,7 +16,7 @@ for r in keras_regularizer_classes
     reg_name = Symbol(r)
 
     @eval begin
-        type $reg_name
+        struct $reg_name
             obj::PyObject
 
             @doc PyDoc(Keras._regularizers, Symbol($r)) function $reg_name(args...; kwargs...)

@@ -22,7 +22,7 @@ for i in keras_initializer_obj
     init_name = Symbol(i)
 
     @eval begin
-        type $init_name
+        struct $init_name
             obj::PyObject
 
             @doc PyDoc(Keras._initializers, Symbol($i)) function $init_name(args...; kwargs...)

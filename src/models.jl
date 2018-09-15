@@ -1,24 +1,24 @@
 using StatsBase
 
-@compat abstract type Model end
+abstract type Model end
 
-layers{T<:Model}(m::T) = error("layers(::$T) not implemented.")
+layers(m::T) where {T<:Model} = error("layers(::$T) not implemented.")
 
-inputs{T<:Model}(m::T) = error("inputs(::$T) not implemented.")
+inputs(m::T) where {T<:Model} = error("inputs(::$T) not implemented.")
 
-outputs{T<:Model}(m::T) = error("outputs(::$T) not implemented.")
+outputs(m::T) where {T<:Model} = error("outputs(::$T) not implemented.")
 
-Base.getindex{T<:Model}(m::T, i::Int) = error("getindex(::$T, ::Int) not implemented")
+Base.getindex(m::T, i::Int) where {T<:Model} = error("getindex(::$T, ::Int) not implemented")
 
-function StatsBase.fit!{T<:Model}(m::T, args...; kwargs...)
+function StatsBase.fit!(m::T, args...; kwargs...) where {T<:Model}
     error("fit(::$T, args...; kwargs...) not implemented.")
 end
 
-function evaluate{T<:Model}(m::T, args...; kwargs...)
+function evaluate(m::T, args...; kwargs...) where {T<:Model}
     error("evaluate(::$T, args...; kwargs...) not implemented.")
 end
 
-function StatsBase.predict{T<:Model}(m::T, args...; kwargs...)
+function StatsBase.predict(m::T, args...; kwargs...) where {T<:Model}
     error("predict(::$T, args...; kwargs...) not implemented.")
 end
 
@@ -31,7 +31,7 @@ end
 - get_layer
 =#
 
-@doc PyDoc(Keras._models, :Sequential) type Sequential <: Keras.Model
+@doc PyDoc(Keras._models, :Sequential) struct Sequential <: Keras.Model
     obj::PyObject
     layers::Array{Keras.Layer}
 

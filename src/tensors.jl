@@ -9,7 +9,9 @@
 # mapping of function names and we aren't performing inspection on the python KB code.
 #
 # TODO: Check that PyObject is an appropriate Tensor.
-type Tensor
+using Compat.Statistics
+
+struct Tensor
     o::PyObject
 end
 
@@ -43,9 +45,9 @@ Base.maximum(x::Tensor, dims=nothing) = Tensor(Keras._backend[:max](x.o, axis=di
 Base.minimum(x::Tensor, dims=nothing) = Tensor(Keras._backend[:min](x.o, axis=dims))
 Base.sum(x::Tensor, dims=nothing) = Tensor(Keras._backend[:sum](x.o, axis=dims))
 Base.prod(x::Tensor, dims=nothing) = Tensor(Keras._backend[:prod](x.o, axis=dims))
-Base.var(x::Tensor, dims=nothing) = Tensor(Keras._backend[:var](x.o, axis=dims))
-Base.std(x::Tensor, dims=nothing) = Tensor(Keras._backend[:std](x.o, axis=dims))
-Base.mean(x::Tensor, dims=nothing) = Tensor(Keras._backend[:mean](x.o, axis=dims))
+Statistics.var(x::Tensor, dims=nothing) = Tensor(Keras._backend[:var](x.o, axis=dims))
+Statistics.std(x::Tensor, dims=nothing) = Tensor(Keras._backend[:std](x.o, axis=dims))
+Statistics.mean(x::Tensor, dims=nothing) = Tensor(Keras._backend[:mean](x.o, axis=dims))
 Base.any(x::Tensor, dims=nothing) = Tensor(Keras._backend[:any](x.o, axis=dims))
 Base.all(x::Tensor, dims=nothing) = Tensor(Keras._backend[:all](x.o, axis=dims))
 Base.broadcast(::typeof(sqrt), x::Tensor) = Tensor(Keras._backend[:sqrt](x.o))

@@ -23,7 +23,7 @@ for c in keras_callbacks
     cb_name = Symbol(c)
 
     @eval begin
-        type $cb_name
+        struct $cb_name
             obj::PyObject
 
             @doc PyDoc(Keras._callbacks, Symbol($c)) function $cb_name(args...; kwargs...)
