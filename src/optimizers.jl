@@ -19,7 +19,7 @@ for o in keras_optimizers
     opt_name = Symbol(o)
 
     @eval begin
-        type $opt_name
+        struct $opt_name
             obj::PyObject
 
             @doc PyDoc(Keras._optimizers, Symbol($o)) function $opt_name(args...; kwargs...)

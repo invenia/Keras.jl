@@ -1,12 +1,15 @@
+using Compat.Random
+using Compat.Statistics
+using Compat.Test
+using PyCall
 using Keras
 using StatsBase
 
-using Base.Test
-
+import Keras: metric
 import Keras.Layers: Dense, Activation, LSTM
 
-mse(actual, pred) = mean(square(actual - pred))
-mae(actual, pred) = mean(abs(actual - pred))
+mse(actual, pred) = Statistics.mean(square(actual - pred))
+mae(actual, pred) = Statistics.mean(abs(actual - pred))
 rmse(actual, pred) = sqrt(mse(actual, pred))
 
 @testset "Keras" begin
@@ -32,29 +35,31 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
         predict(model, rand(10, 30); batch_size=5, verbose=0)
     end
 
-    @testset "Custom Objectives & Metrics" begin
-        model = Sequential()
-        add!(model, Dense(20, input_dim=30))
-        add!(model, Activation(:relu))
-        add!(model, Dense(10))
-        add!(model, Activation(:softmax))
+    if VERSION >= v"0.7.0"
+        @testset "Custom Objectives & Metrics" begin
+            model = Sequential()
+            add!(model, Dense(20, input_dim=30))
+            add!(model, Activation(:relu))
+            add!(model, Dense(10))
+            add!(model, Activation(:softmax))
 
-        compile!(
-            model;
-            loss=metric(mse),
-            optimizer=:sgd,
-            metrics=[:accuracy, metric(mae), metric(rmse)]
-        )
+            compile!(
+                model;
+                loss=metric(mse),
+                optimizer=:sgd,
+                metrics=[:accuracy, metric(mae), metric(rmse)]
+            )
 
-        h = fit!(model, rand(100, 30), rand(100, 10); epochs=10, batch_size=10, verbose=0)
+            h = fit!(model, rand(100, 30), rand(100, 10); epochs=10, batch_size=10, verbose=0)
 
-        @test haskey(h[:history], "acc")
-        @test haskey(h[:history], "loss")
-        @test haskey(h[:history], "mae")
-        @test haskey(h[:history], "rmse")
+            @test haskey(h[:history], "acc")
+            @test haskey(h[:history], "loss")
+            @test haskey(h[:history], "mae")
+            @test haskey(h[:history], "rmse")
 
-        evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
-        predict(model, rand(10, 30); batch_size=5, verbose=0)
+            evaluate(model, rand(10, 30), rand(10, 10); batch_size=5, verbose=0)
+            predict(model, rand(10, 30); batch_size=5, verbose=0)
+        end
     end
 
     @testset "Tensor Operations" begin
@@ -74,7 +79,7 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
                 end
 
                 @test size(expected) == size(result)
-                @test typeof(expected) == typeof(result)
+                @test op === transpose || typeof(expected) == typeof(result)
                 match = all(map(isapprox, expected, result))
                 if !match
                     println(expected)
@@ -83,7 +88,7 @@ rmse(actual, pred) = sqrt(mse(actual, pred))
                 @test match
             end
 
-            @testset "Testing $op" for op in [maximum, minimum, sum, prod, var, std, mean]
+            @testset "Testing $op" for op in [maximum, minimum, sum, prod, Statistics.var, Statistics.std, Statistics.mean]
                 expected = Float32(op(x))
                 result = Float32(Keras.eval(op(x_t))[1])
 

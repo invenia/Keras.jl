@@ -1,28 +1,29 @@
 using Conda
+using Compat
 using PyCall
 
 backend = "theano"
 
 try
-    @pyimport keras
-    if VersionNumber(keras.__version__) >= v"2.0.2"
-        info("Using Keras $(keras.__version__) -> $(keras.__path__)")
-        backend = keras.backend[:backend]()
+    keras = pyimport("keras")
+    if VersionNumber(keras[:__version__]) >= v"2.0.2"
+        Compat.@info("Using Keras $(keras[:__version__]) -> $(keras[:__path__])")
+        global backend = keras[:backend][:backend]()
     else
-        error("Invalid Keras version ($(keras.__version__))")
+        Compat.@error("Invalid Keras version ($(keras[:__version__]))")
     end
 catch _
-    info("No valid (>=2.0.2) install of keras found.")
-    info("Installing Keras via Conda.jl...")
+    Compat.@info("No valid (>=2.0.2) install of keras found.")
+    Compat.@info("Installing Keras via Conda.jl...")
     Conda.add_channel("conda-forge")
     Conda.add("keras==2.0.2")
 
-    if is_windows()
-        warn("Tensorflow only supports python 3.5 on windows. Using the included theano backend.")
+    if Compat.Sys.iswindows()
+        Compat.@warn("Tensorflow only supports python 3.5 on windows. Using the included theano backend.")
     else
-        info("Installing Tensorflow (1.0.0) via Conda.jl")
+        Compat.@info("Installing Tensorflow (1.0.0) via Conda.jl")
         Conda.add("tensorflow==1.0.0")
-        backend = "tensorflow"
+        global backend = "tensorflow"
     end
 end
 
@@ -42,7 +43,7 @@ if !ispath(config_path)
         mkdir(keras_path)
     end
 
-    info("Writing default config to $config_path")
+    Compat.@info("Writing default config to $config_path")
 
     open(config_path, "w+") do fstream
         write(fstream, default_settings)

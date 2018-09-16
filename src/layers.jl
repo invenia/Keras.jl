@@ -3,62 +3,62 @@ using StatsBase
 
 import Base: convert, show
 
-@compat abstract type Layer end
+abstract type Layer end
 
-convert{T<:Layer}(t::Type{T}, x::PyObject) = error("convert(::Type{$T}, ::PyObject) not implemented.")
-PyObject{T<:Layer}(l::T) = error("PyObject(::$T) not implemented.")
+convert(t::Type{T}, x::PyObject) where {T<:Layer} = error("convert(::Type{$T}, ::PyObject) not implemented.")
+PyObject(l::T) where {T<:Layer} = error("PyObject(::$T) not implemented.")
 
-function StatsBase.weights{T<:Layer}(l::T)
+function StatsBase.weights(l::T) where {T<:Layer}
     obj = PyObject(l)
     return obj[:get_weights]()
 end
 
-function weights!{T<:Layer}(l::T, W::Array)
+function weights!(l::T, W::Array) where {T<:Layer}
     obj = PyObject(l)
     obj[:set_weights](W)
 end
 
-function config{T<:Layer}(l::T)
+function config(l::T) where {T<:Layer}
     obj = PyObject(l)
     return obj[:get_config]()
 end
 
-function input{T<:Layer}(l::T)
+function input(l::T) where {T<:Layer}
     obj = PyObject(l)
     return Tensor(obj[:input])
 end
 
-function input{T<:Layer}(l::T, i::Int)
+function input(l::T, i::Int) where {T<:Layer}
     obj = PyObject(l)
     return Tensor(obj[:get_input_at](i))
 end
 
-function output{T<:Layer}(l::T)
+function output(l::T) where {T<:Layer}
     obj = PyObject(l)
     return Tensor(obj[:output])
 end
 
-function output{T<:Layer}(l::T, i::Int)
+function output(l::T, i::Int) where {T<:Layer}
     obj = PyObject(l)
     return Tensor(obj[:get_output_at](i))
 end
 
-function input_shape{T<:Layer}(l::T)
+function input_shape(l::T) where {T<:Layer}
     obj = PyObject(l)
     return obj[:input_shape]
 end
 
-function input_shape{T<:Layer}(l::T, i::Int)
+function input_shape(l::T, i::Int) where {T<:Layer}
     obj = PyObject(l)
     return obj[:get_input_shape_at](i)
 end
 
-function output_shape{T<:Layer}(l::T)
+function output_shape(l::T) where {T<:Layer}
     obj = PyObject(l)
     return obj[:output_shape]
 end
 
-function output_shape{T<:Layer}(l::T, i::Int)
+function output_shape(l::T, i::Int) where {T<:Layer}
     obj = PyObject(l)
     return obj[:get_output_shape_at](i)
 end
@@ -161,7 +161,7 @@ for (submod, layers) in keras_layers
         layer_name = Symbol(l)
 
         @eval begin
-            type $layer_name <: Keras.Layer
+            struct $layer_name <: Keras.Layer
                 obj::PyObject
 
                 @doc PyDoc(Keras._layers, Symbol($l)) function $layer_name(args...; kwargs...)
