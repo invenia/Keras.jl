@@ -19,9 +19,9 @@ script:
     julia --depwarn=error -e '
       VERSION >= v"0.7.0-DEV.3656" && using Pkg
       ENV["PYTHON"] = ""
-      # Because we seem to be installing 3.6 deps for 3.7,
-      # so I guess we can stick with 2 for now :/?
-      ENV["CONDA_JL_VERSION"] = "2"
+      # python 3.7 does not seem to work correctly, so lets try manually setting the root python version
+      # to 3.6
+      Pkg.add("Conda"); using Conda; Conda.add("python=3.6")
       if VERSION >= v"0.7.0-DEV.5183" && (isfile("Project.toml") || isfile("JuliaProject.toml"))
           Pkg.build(); Pkg.build("PyCall"); Pkg.test(coverage=true)
       else

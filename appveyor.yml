@@ -15,7 +15,7 @@ install:
 build_script:
   - echo "%JL_BUILD_SCRIPT%"
   - C:\julia\bin\julia --depwarn=error -e "ENV[\"PYTHON\"] = \"\";
-  - C:\julia\bin\julia --depwarn=error -e "ENV[\"PYTHON\"] = \"\"; ENV[\"CONDA_JL_VERSION\"] = \"2\"; %JL_BUILD_SCRIPT%"
+  - C:\julia\bin\julia --depwarn=error -e "ENV[\"PYTHON\"] = \"\"; Pkg.add(\"Conda\"); using Conda; Conda.add(\"python=3.6\"); %JL_BUILD_SCRIPT%"
 
 test_script:
   - echo "%JL_TEST_SCRIPT%"
